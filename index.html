@@ -49,8 +49,7 @@ button,input,textarea{font-family:inherit}
 .nav-links a{text-decoration:none;color:var(--g600);font-size:.85rem;font-weight:500;transition:var(--t)}
 .nav-links a:hover{color:var(--b7)}
 .nav-btns{display:flex;gap:8px;align-items:center}
-.nav-set{background:none;border:1.5px solid var(--g200);color:var(--g600);width:38px;height:38px;border-radius:var(--r);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--t)}
-.nav-set:hover{border-color:var(--b7);color:var(--b7)}
+
 .nav-cta{background:var(--b7);color:#fff;border:none;padding:9px 18px;border-radius:var(--r);font-size:.84rem;font-weight:600;cursor:pointer;transition:var(--t);white-space:nowrap}
 .nav-cta:hover{background:var(--b9);transform:translateY(-1px)}
 .menu-toggle{display:none;background:none;border:1.5px solid var(--g200);padding:8px 11px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:var(--g700)}
@@ -250,22 +249,7 @@ footer{background:var(--g900);color:#fff;padding:48px 0 28px}
 .footer-bottom{border-top:1px solid var(--g700);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:.76rem;color:var(--g400);flex-wrap:wrap;gap:10px}
 .footer-tag{background:rgba(255,255,255,.08);padding:4px 12px;border-radius:999px;color:var(--b4);font-size:.72rem}
 
-/* ================= MODAL ================= */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px)}
-.modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:var(--rx);padding:32px;max-width:500px;width:100%;box-shadow:var(--shl);animation:fadeUp .25s ease}
-.modal h3{font-size:1.2rem;font-weight:800;color:var(--g900);margin-bottom:8px}
-.modal p{font-size:.84rem;color:var(--g500);margin-bottom:16px;line-height:1.6}
-.modal a{color:var(--b7);font-weight:600}
-.modal label{display:block;font-size:.82rem;font-weight:600;color:var(--g700);margin-bottom:6px}
-.modal input{width:100%;border:1.5px solid var(--g200);border-radius:var(--r);padding:11px 15px;font-size:.88rem;color:var(--g800);outline:none;margin-bottom:8px;transition:var(--t)}
-.modal input:focus{border-color:var(--b7);box-shadow:0 0 0 3px rgba(0,119,182,.1)}
-.modal-hint{font-size:.74rem;color:var(--g400);margin-bottom:16px;line-height:1.5}
-.modal-status{padding:10px 14px;border-radius:var(--r);font-size:.82rem;margin-bottom:16px;display:none}
-.modal-status.ok{display:block;background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7}
-.modal-status.err{display:block;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5}
-.modal-status.loading{display:block;background:#EFF6FF;color:#1E40AF;border:1px solid #93C5FD}
-.modal-btns{display:flex;gap:10px;justify-content:flex-end}
+
 
 /* ================= RESPONSIVE ================= */
 @media(max-width:1024px){
@@ -308,8 +292,6 @@ footer{background:var(--g900);color:#fff;padding:48px 0 28px}
             <li><a href="#kontak" onclick="closeMenu()">Kontak</a></li>
         </ul>
         <div class="nav-btns">
-            <span class="conn-status" id="connStatus"></span>
-            <button class="nav-set" onclick="openModal()" title="Pengaturan Backend">⚙️</button>
             <button class="nav-cta" onclick="goTo('chat')">🤖 Chat AI</button>
             <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">☰</button>
         </div>
@@ -321,7 +303,7 @@ footer{background:var(--g900);color:#fff;padding:48px 0 28px}
     <div class="container">
         <div class="hero-grid">
             <div>
-                <div class="hero-badge">🤖 Gemini AI &nbsp;+&nbsp; 📡 BMKG Real-time</div>
+                <div class="hero-badge">🤖 AI Assistant &nbsp;+&nbsp; 📡 BMKG Real-time</div>
                 <h1 class="hero-title">Siap Siaga<br>dengan Bantuan<br><span>Kecerdasan Buatan</span></h1>
                 <p class="hero-desc">SiagaAI membantu masyarakat Indonesia mempersiapkan diri menghadapi bencana alam. Data gempa real-time, panduan AI, dan semua info darurat dalam satu aplikasi.</p>
                 <div class="hero-actions">
@@ -397,13 +379,13 @@ footer{background:var(--g900);color:#fff;padding:48px 0 28px}
         <div class="section-hdr">
             <div class="section-badge">AI Assistant</div>
             <h2 class="section-title">Tanya SiagaAI, Dapatkan Panduan Instan</h2>
-            <p class="section-desc">Didukung Gemini AI melalui backend yang aman — API Key tidak terekspos di browser.</p>
+            <p class="section-desc">Asisten AI cerdas yang siap membantu kesiapsiagaan bencana 24/7 — aman dan terpercaya.</p>
         </div>
         <div class="chat-wrapper">
-            <div class="chat-notice" id="chatNotice">
-                <span>ℹ️</span>
+            <div class="chat-notice" id="chatNotice" style="background:linear-gradient(135deg,#D1FAE5,#ECFDF5);border-color:#6EE7B7;color:#065F46">
+                <span>🛡️</span>
                 <div id="chatNoticeText">
-                    Klik <strong>⚙️ Pengaturan</strong> di navbar untuk menghubungkan backend. Chat AI dan data gempa BMKG memerlukan backend aktif.
+                    Tanya apa saja tentang kesiapsiagaan bencana — panduan evakuasi, pertolongan pertama, hingga persiapan darurat. Untuk keadaan darurat nyata, hubungi <strong>112</strong>.
                 </div>
             </div>
             <div class="chat-box">
@@ -597,30 +579,12 @@ footer{background:var(--g900);color:#fff;padding:48px 0 28px}
         </div>
         <div class="footer-bottom">
             <span>© 2026 SiagaAI — IDCamp 2025 Developer Challenge</span>
-            <span class="footer-tag">🤖 Gemini AI + 📡 BMKG Real-time</span>
+            <span class="footer-tag">🤖 AI Assistant + 📡 BMKG Real-time</span>
         </div>
     </div>
 </footer>
 
-<!-- ═══════════════ SETTINGS MODAL ═══════════════ -->
-<div class="modal-overlay" id="settingsModal">
-    <div class="modal">
-        <h3>⚙️ Pengaturan Backend</h3>
-        <p>
-            SiagaAI menggunakan Google Apps Script sebagai backend agar API Key aman dan tidak terekspos.
-            Ikuti panduan di <strong>backend/SETUP.md</strong>, lalu paste URL deployment di bawah.
-        </p>
-        <label for="backendInput">URL Backend (Google Apps Script)</label>
-        <input type="url" id="backendInput" placeholder="https://script.google.com/macros/s/.../exec">
-        <p class="modal-hint">🔒 URL disimpan di perangkat Anda (localStorage). Tidak dikirim ke pihak ketiga.</p>
-        <div class="modal-status" id="modalStatus"></div>
-        <div class="modal-btns">
-            <button class="btn-o" onclick="testConnection()" id="testBtn">🔍 Test Koneksi</button>
-            <button class="btn-o" onclick="closeModal()">Batal</button>
-            <button class="btn-p" onclick="saveBackendUrl()">💾 Simpan</button>
-        </div>
-    </div>
-</div>
+
 
 <!-- ═══════════════ JAVASCRIPT ═══════════════ -->
 <script>
@@ -675,91 +639,11 @@ function initScrollAnim() {
 /* ════════════════════════════════════════════
    CONNECTION STATUS
 ════════════════════════════════════════════ */
-function updateConnStatus() {
-    var el = document.getElementById('connStatus');
-    if (backendUrl) {
-        el.className = 'conn-status on';
-        el.innerHTML = '<span class="online-dot"></span> Backend';
-    } else {
-        el.className = 'conn-status off';
-        el.textContent = '⚠️ Belum terhubung';
-    }
-}
+function updateConnStatus() {}
 
-function updateChatNotice() {
-    var notice = document.getElementById('chatNotice');
-    var text = document.getElementById('chatNoticeText');
-    if (backendUrl) {
-        notice.style.background = 'linear-gradient(135deg,#D1FAE5,#ECFDF5)';
-        notice.style.borderColor = '#6EE7B7';
-        notice.style.color = '#065F46';
-        text.innerHTML = '✅ Backend terhubung. Chat AI dan data BMKG aktif! Untuk keadaan darurat nyata, hubungi <strong>112</strong>.';
-    } else {
-        notice.style.background = 'linear-gradient(135deg,#DBEAFE,#EFF6FF)';
-        notice.style.borderColor = '#93C5FD';
-        notice.style.color = '#1E40AF';
-        text.innerHTML = 'Klik <strong>⚙️ Pengaturan</strong> di navbar untuk menghubungkan backend. Chat AI dan data BMKG memerlukan backend aktif.';
-    }
-}
+function updateChatNotice() {}
 
-/* ════════════════════════════════════════════
-   SETTINGS MODAL
-════════════════════════════════════════════ */
-function openModal() {
-    var m = document.getElementById('settingsModal');
-    m.classList.add('open');
-    var inp = document.getElementById('backendInput');
-    if (backendUrl) inp.value = backendUrl;
-    document.getElementById('modalStatus').className = 'modal-status';
-    document.getElementById('modalStatus').textContent = '';
-    setTimeout(function() { inp.focus(); }, 80);
-}
-function closeModal() { document.getElementById('settingsModal').classList.remove('open'); }
 
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeModal();
-});
-
-function testConnection() {
-    var url = document.getElementById('backendInput').value.trim();
-    if (!url) { showModalStatus('err', 'Masukkan URL backend terlebih dahulu.'); return; }
-    showModalStatus('loading', '🔄 Menguji koneksi...');
-    document.getElementById('testBtn').disabled = true;
-
-    fetch(url, { redirect:'follow' })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.status === 'ok' && data.app) {
-                showModalStatus('ok', '✅ Terhubung! ' + data.app + ' v' + (data.version || '?'));
-            } else {
-                showModalStatus('err', '❌ Respons tidak dikenali. Pastikan URL yang benar.');
-            }
-        })
-        .catch(function(err) {
-            showModalStatus('err', '❌ Gagal terhubung: ' + err.message);
-        })
-        .finally(function() {
-            document.getElementById('testBtn').disabled = false;
-        });
-}
-
-function saveBackendUrl() {
-    var url = document.getElementById('backendInput').value.trim();
-    if (!url) { showModalStatus('err', 'Masukkan URL backend.'); return; }
-    backendUrl = url;
-    localStorage.setItem('siagaai_backend', url);
-    closeModal();
-    updateConnStatus();
-    updateChatNotice();
-    loadBMKG();
-    appendMsg('ai', '✅ Backend berhasil dihubungkan! Sekarang Anda bisa bertanya tentang kesiapsiagaan bencana. 🛡️');
-}
-
-function showModalStatus(type, msg) {
-    var el = document.getElementById('modalStatus');
-    el.className = 'modal-status ' + type;
-    el.textContent = msg;
-}
 
 /* ════════════════════════════════════════════
    BMKG DATA
@@ -903,8 +787,7 @@ function send() {
     if (!txt) return;
 
     if (!backendUrl) {
-        openModal();
-        appendMsg('ai', '⚙️ Silakan hubungkan backend terlebih dahulu lewat tombol <strong>⚙️ Pengaturan</strong> di navbar.');
+        appendMsg('ai', '❌ Backend belum dikonfigurasi. Hubungi developer.');
         return;
     }
 
