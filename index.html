@@ -913,7 +913,7 @@ function send() {
     document.getElementById('quickWrap').style.display = 'none';
 
     appendMsg('user', escHtml(txt));
-    chatHistory.push({ role:'user', parts:[{ text: txt }] });
+    chatHistory.push({ role:'user', content: txt });
     addTyping();
 
     var payload = {
@@ -933,7 +933,7 @@ function send() {
             chatHistory.pop();
             appendMsg('ai', '❌ ' + escHtml(data.error));
         } else if (data.reply) {
-            chatHistory.push({ role:'model', parts:[{ text: data.reply }] });
+            chatHistory.push({ role:'assistant', content: data.reply });
             if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
             appendMsg('ai', fmt(data.reply));
         } else {
