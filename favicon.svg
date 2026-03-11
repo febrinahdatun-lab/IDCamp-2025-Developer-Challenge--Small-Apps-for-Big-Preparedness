@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0077B6"/>
+      <stop offset="100%" style="stop-color:#023E8A"/>
+    </linearGradient>
+    <linearGradient id="sh" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#48CAE4"/>
+      <stop offset="100%" style="stop-color:#0077B6"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- Shield shape -->
+  <path d="M32 8 L50 18 L50 34 C50 46 32 56 32 56 C32 56 14 46 14 34 L14 18 Z" fill="url(#sh)" opacity="0.3"/>
+  <path d="M32 12 L47 20 L47 33 C47 43 32 52 32 52 C32 52 17 43 17 33 L17 20 Z" fill="none" stroke="#fff" stroke-width="2" opacity="0.9"/>
+  <!-- AI circuit dot -->
+  <circle cx="32" cy="30" r="6" fill="#fff"/>
+  <circle cx="32" cy="30" r="3" fill="#0077B6"/>
+  <!-- Signal waves -->
+  <path d="M24 38 Q28 42 32 38 Q36 34 40 38" fill="none" stroke="#48CAE4" stroke-width="2" stroke-linecap="round"/>
+  <path d="M21 42 Q26.5 47 32 42 Q37.5 37 43 42" fill="none" stroke="#48CAE4" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+</svg>
