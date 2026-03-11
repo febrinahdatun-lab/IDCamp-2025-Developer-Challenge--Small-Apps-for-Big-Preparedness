@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="dicoding:email" content="matjenius@gmail.com">
+    <meta name="description" content="SiagaAI - Asisten AI kesiapsiagaan bencana Indonesia. Chat AI, data gempa BMKG real-time, panduan bencana, checklist siaga, dan kontak darurat.">
+    <title>SiagaAI – Asisten Kesiapsiagaan Bencana Indonesia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+/* ================= RESET & VARS ================= */
+:root {
+    --b9:#023E8A; --b7:#0077B6; --b4:#48CAE4; --b1:#CAF0F8;
+    --red:#E63946; --org:#FF9F1C; --grn:#06D6A0;
+    --bg:#F0F7FF; --w:#FFF;
+    --g50:#F9FAFB; --g100:#F3F4F6; --g200:#E5E7EB; --g300:#D1D5DB;
+    --g400:#9CA3AF; --g500:#6B7280; --g600:#4B5563; --g700:#374151; --g800:#1F2937; --g900:#111827;
+    --r:12px; --rl:16px; --rx:24px;
+    --sh:0 4px 20px rgba(0,0,0,.09); --shl:0 10px 40px rgba(0,0,0,.12);
+    --t:all .25s ease;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--g800);line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+a{color:inherit} img{max-width:100%;display:block}
+button,input,textarea{font-family:inherit}
+
+/* ================= ANIMATIONS ================= */
+.anim{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.anim.vis{opacity:1;transform:translateY(0)}
+@keyframes pulse-dot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.7)}70%{box-shadow:0 0 0 6px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.online-dot{display:inline-block;width:7px;height:7px;background:#4ADE80;border-radius:50%;margin-right:4px;animation:pulse-dot 2s infinite}
+
+/* ================= NAVBAR ================= */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--g200);padding:12px 0;transition:var(--t)}
+#navbar.scrolled{box-shadow:var(--sh);padding:8px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--b9);font-size:1.25rem;font-weight:800;letter-spacing:-.5px;flex-shrink:0}
+.logo-icon{font-size:1.5rem}
+.nav-links{display:flex;list-style:none;gap:24px}
+.nav-links a{text-decoration:none;color:var(--g600);font-size:.85rem;font-weight:500;transition:var(--t)}
+.nav-links a:hover{color:var(--b7)}
+.nav-btns{display:flex;gap:8px;align-items:center}
+.nav-set{background:none;border:1.5px solid var(--g200);color:var(--g600);width:38px;height:38px;border-radius:var(--r);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--t)}
+.nav-set:hover{border-color:var(--b7);color:var(--b7)}
+.nav-cta{background:var(--b7);color:#fff;border:none;padding:9px 18px;border-radius:var(--r);font-size:.84rem;font-weight:600;cursor:pointer;transition:var(--t);white-space:nowrap}
+.nav-cta:hover{background:var(--b9);transform:translateY(-1px)}
+.menu-toggle{display:none;background:none;border:1.5px solid var(--g200);padding:8px 11px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:var(--g700)}
+
+/* Status indicator */
+.conn-status{font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:999px;display:none;align-items:center;gap:4px}
+.conn-status.on{display:inline-flex;background:#D1FAE5;color:#065F46}
+.conn-status.off{display:inline-flex;background:#FEE2E2;color:#991B1B}
+
+/* ================= HERO ================= */
+#hero{padding:130px 0 80px;background:linear-gradient(135deg,#EBF4FF 0%,#F0F9FF 60%,#FFF7ED 100%);position:relative;overflow:hidden}
+#hero::after{content:'';position:absolute;top:-80px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(0,119,182,.08) 0%,transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,119,182,.1);color:var(--b7);padding:6px 14px;border-radius:999px;font-size:.76rem;font-weight:700;border:1px solid rgba(0,119,182,.2);margin-bottom:20px}
+.hero-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.15;letter-spacing:-1.5px;color:var(--g900);margin-bottom:20px}
+.hero-title span{background:linear-gradient(135deg,var(--b7),var(--b9));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:1rem;color:var(--g500);margin-bottom:32px;max-width:480px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-p{background:var(--b7);color:#fff;border:none;padding:13px 24px;border-radius:var(--r);font-size:.9rem;font-weight:600;cursor:pointer;transition:var(--t);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-p:hover{background:var(--b9);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,119,182,.3)}
+.btn-o{background:transparent;color:var(--g700);border:1.5px solid var(--g300);padding:13px 24px;border-radius:var(--r);font-size:.9rem;font-weight:600;cursor:pointer;transition:var(--t);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-o:hover{border-color:var(--b7);color:var(--b7);background:rgba(0,119,182,.04)}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px}
+.stat-card{background:#fff;padding:18px;border-radius:var(--r);border:1px solid var(--g200);box-shadow:0 1px 4px rgba(0,0,0,.06);text-align:center}
+.stat-num{font-size:1.55rem;font-weight:800;color:var(--b9);letter-spacing:-1px}
+.stat-lbl{font-size:.7rem;color:var(--g400);margin-top:4px;line-height:1.4}
+
+/* Hero visual */
+.hero-visual{position:relative}
+.preview-card{background:#fff;border-radius:var(--rx);padding:26px;box-shadow:var(--shl);border:1px solid var(--g100)}
+.preview-hdr{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.preview-av{width:42px;height:42px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--b7),var(--b9));display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.preview-name{font-weight:700;font-size:.92rem}
+.preview-sub{font-size:.72rem;color:var(--g400)}
+.preview-msg{background:var(--g100);border-radius:12px 12px 12px 2px;padding:11px 15px;font-size:.84rem;color:var(--g700);line-height:1.5;margin-bottom:10px}
+.preview-msg.user{background:var(--b7);color:#fff;border-radius:12px 12px 2px 12px;margin-left:36px}
+.preview-msg strong{color:var(--b9)}
+.preview-msg.user strong{color:#fff}
+.typing-anim{display:flex;gap:4px;padding:10px 14px;background:var(--g100);border-radius:12px 12px 12px 2px;width:fit-content}
+.dot{width:7px;height:7px;background:var(--g400);border-radius:50%;animation:bounce 1.2s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+
+/* ================= SECTIONS SHARED ================= */
+section{padding:80px 0}
+section:nth-child(even){background:#fff}
+.section-hdr{text-align:center;margin-bottom:48px}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,119,182,.1);color:var(--b7);padding:4px 14px;border-radius:999px;font-size:.74rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;color:var(--g900);letter-spacing:-1px;margin-bottom:12px}
+.section-desc{font-size:.95rem;color:var(--g500);max-width:560px;margin:0 auto}
+
+/* ================= BMKG LIVE ================= */
+#gempa{background:linear-gradient(180deg,#fff 0%,var(--bg) 100%)}
+.live-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse-dot 1.5s infinite}
+.eq-loading{text-align:center;padding:60px 20px;color:var(--g400)}
+.eq-loading .spinner{width:36px;height:36px;border:3px solid var(--g200);border-top-color:var(--b7);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+.eq-placeholder{text-align:center;padding:50px 20px;background:var(--g50);border-radius:var(--rl);border:2px dashed var(--g200)}
+.eq-placeholder p{color:var(--g400);font-size:.9rem;margin-bottom:14px}
+
+.eq-latest{background:#fff;border-radius:var(--rl);padding:28px;box-shadow:var(--sh);border:1px solid var(--g100);margin-bottom:24px}
+.eq-main{display:flex;gap:24px;align-items:flex-start}
+.eq-mag-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:1.8rem;font-weight:900;letter-spacing:-1px}
+.eq-mag-circle.green{background:linear-gradient(135deg,#10B981,#059669)}
+.eq-mag-circle.yellow{background:linear-gradient(135deg,#F59E0B,#D97706)}
+.eq-mag-circle.orange{background:linear-gradient(135deg,#F97316,#EA580C)}
+.eq-mag-circle.red{background:linear-gradient(135deg,#EF4444,#DC2626)}
+.eq-mag-circle.darkred{background:linear-gradient(135deg,#991B1B,#7F1D1D)}
+.eq-info{flex:1;min-width:0}
+.eq-info h3{font-size:1rem;font-weight:700;color:var(--g800);margin-bottom:8px;line-height:1.4}
+.eq-meta{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}
+.eq-meta-item{display:flex;align-items:center;gap:5px;font-size:.82rem;color:var(--g500)}
+.eq-meta-item strong{color:var(--g700)}
+.eq-potensi{font-size:.84rem;color:var(--g600);padding:8px 12px;background:var(--g50);border-radius:8px;border-left:3px solid var(--b7);margin-top:10px}
+.eq-img{margin-top:18px;border-radius:var(--r);overflow:hidden;border:1px solid var(--g200);max-width:380px}
+.eq-img img{width:100%;height:auto}
+
+.eq-recent-title{font-weight:700;font-size:.92rem;color:var(--g700);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.eq-recent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:18px}
+.eq-r-card{background:#fff;border:1px solid var(--g100);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:var(--t)}
+.eq-r-card:hover{box-shadow:var(--sh);transform:translateY(-2px)}
+.eq-r-mag{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:800;color:#fff;flex-shrink:0}
+.eq-r-info{min-width:0}
+.eq-r-info h4{font-size:.8rem;font-weight:600;color:var(--g700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eq-r-info p{font-size:.72rem;color:var(--g400)}
+.eq-footer{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:var(--g400);flex-wrap:wrap;gap:8px}
+.eq-footer a{color:var(--b7);font-weight:600;text-decoration:none}
+
+/* ================= FEATURES ================= */
+#fitur{background:var(--bg)}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.feature-card{background:#fff;border:1px solid var(--g100);border-radius:var(--rl);padding:28px 22px;text-align:center;transition:var(--t);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.feature-card:hover{transform:translateY(-5px);box-shadow:var(--shl);border-color:var(--b4)}
+.feature-icon{font-size:2.4rem;margin-bottom:14px;display:block}
+.feature-title{font-size:.95rem;font-weight:700;color:var(--g800);margin-bottom:8px}
+.feature-desc{font-size:.82rem;color:var(--g500);line-height:1.55}
+
+/* ================= CHAT ================= */
+#chat{background:linear-gradient(180deg,#EBF4FF 0%,#fff 100%)}
+.chat-wrapper{max-width:800px;margin:0 auto}
+.chat-notice{background:linear-gradient(135deg,#DBEAFE,#EFF6FF);border:1px solid #93C5FD;border-radius:var(--r);padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;font-size:.84rem;color:#1E40AF;line-height:1.55}
+.chat-box{background:#fff;border-radius:var(--rx);box-shadow:var(--shl);border:1px solid var(--g100);overflow:hidden}
+.chat-top{background:linear-gradient(135deg,var(--b9),var(--b7));padding:18px 22px;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.chat-top-left{display:flex;align-items:center;gap:12px}
+.chat-av-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.chat-top h3{font-size:.95rem;font-weight:700}
+.chat-top p{font-size:.72rem;opacity:.85}
+.chat-messages{height:420px;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--g200);border-radius:4px}
+.msg{display:flex;gap:8px;max-width:88%;animation:fadeUp .3s ease}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;align-self:flex-end;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.msg.ai .msg-av{background:linear-gradient(135deg,var(--b7),var(--b9));color:#fff}
+.msg.user .msg-av{background:var(--g200)}
+.msg-bub{padding:11px 15px;border-radius:16px;font-size:.86rem;line-height:1.6;word-break:break-word}
+.msg.ai .msg-bub{background:var(--g100);color:var(--g800);border-radius:4px 16px 16px 16px}
+.msg.user .msg-bub{background:var(--b7);color:#fff;border-radius:16px 4px 16px 16px}
+.msg-time{font-size:.68rem;color:var(--g400);margin-top:3px;padding:0 3px}
+.msg.user .msg-time{text-align:right}
+.msg-bub ul{padding-left:18px;margin:6px 0}
+.msg-bub li{margin-bottom:3px;font-size:.84rem}
+.msg-bub strong{color:var(--b9)}
+.msg.user .msg-bub strong{color:#fff}
+
+.quick-wrap{padding:0 22px 14px;display:flex;flex-wrap:wrap;gap:8px}
+.quick-btn{background:rgba(0,119,182,.08);color:var(--b7);border:1px solid rgba(0,119,182,.2);padding:7px 13px;border-radius:999px;font-size:.76rem;font-weight:600;cursor:pointer;transition:var(--t);white-space:nowrap}
+.quick-btn:hover{background:var(--b7);color:#fff;border-color:var(--b7)}
+
+.chat-input-row{padding:14px 22px;border-top:1px solid var(--g100);display:flex;gap:10px;align-items:flex-end;background:#fff}
+#chatInput{flex:1;border:1.5px solid var(--g200);border-radius:var(--r);padding:11px 15px;font-size:.87rem;color:var(--g800);resize:none;outline:none;transition:var(--t);min-height:46px;max-height:120px;line-height:1.5}
+#chatInput:focus{border-color:var(--b7);box-shadow:0 0 0 3px rgba(0,119,182,.1)}
+#chatInput::placeholder{color:var(--g400)}
+.send-btn{background:var(--b7);color:#fff;border:none;width:46px;height:46px;border-radius:var(--r);cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.send-btn:hover:not(:disabled){background:var(--b9);transform:scale(1.05)}
+.send-btn:disabled{background:var(--g300);cursor:not-allowed}
+
+/* ================= PANDUAN ================= */
+#panduan{background:var(--bg)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:32px}
+.tab-btn{background:#fff;border:2px solid var(--g200);color:var(--g600);padding:9px 18px;border-radius:999px;font-size:.82rem;font-weight:600;cursor:pointer;transition:var(--t);display:flex;align-items:center;gap:6px}
+.tab-btn:hover{border-color:var(--b7);color:var(--b7)}
+.tab-btn.active{background:var(--b7);color:#fff;border-color:var(--b7)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.info-card{background:#fff;border-radius:var(--rl);padding:22px;border:1px solid var(--g100);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.info-card.warn{border-left:4px solid var(--org)}
+.info-card.danger{border-left:4px solid var(--red)}
+.info-card.info{border-left:4px solid var(--b7)}
+.info-card.ok{border-left:4px solid var(--grn)}
+.info-card-title{font-weight:700;font-size:.9rem;color:var(--g800);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.info-card ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.info-card li{font-size:.83rem;color:var(--g600);padding-left:18px;position:relative;line-height:1.5}
+.info-card li::before{content:'•';position:absolute;left:0;font-weight:700}
+.info-card.warn li::before{color:var(--org)}
+.info-card.danger li::before{color:var(--red)}
+.info-card.info li::before{color:var(--b7)}
+.info-card.ok li::before{color:var(--grn)}
+
+/* ================= CHECKLIST ================= */
+#checklist{background:#fff}
+.checklist-wrap{max-width:800px;margin:0 auto}
+.progress-card{background:var(--g50);border-radius:var(--rl);padding:22px;margin-bottom:22px;border:1px solid var(--g100)}
+.progress-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.progress-label{font-size:.9rem;font-weight:600;color:var(--g700)}
+.progress-count{font-size:.82rem;color:var(--g400);font-weight:600}
+.progress-bar{height:9px;background:var(--g200);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--b7),var(--grn));border-radius:999px;transition:width .45s ease;width:0%}
+.cl-category{background:#fff;border-radius:var(--rl);border:1px solid var(--g100);overflow:hidden;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.cl-cat-hdr{padding:15px 20px;background:var(--g50);border-bottom:1px solid var(--g100);font-weight:700;font-size:.9rem;color:var(--g700);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:var(--t)}
+.cl-cat-hdr:hover{background:var(--g100)}
+.cl-cat-count{font-size:.75rem;color:var(--g400);font-weight:600}
+.cl-items{padding:10px 20px 14px;display:flex;flex-direction:column;gap:6px}
+.cl-item{display:flex;align-items:center;gap:12px;padding:9px 11px;border-radius:8px;cursor:pointer;transition:var(--t);user-select:none}
+.cl-item:hover{background:var(--g50)}
+.cl-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--b7);cursor:pointer;flex-shrink:0}
+.cl-item span{font-size:.85rem;color:var(--g600);transition:var(--t)}
+.cl-item.checked span{text-decoration:line-through;color:var(--g400)}
+
+/* ================= KONTAK ================= */
+#kontak{background:var(--bg)}
+.contacts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.contact-card{background:#fff;border-radius:var(--rl);padding:22px 18px;border:1px solid var(--g100);box-shadow:0 1px 4px rgba(0,0,0,.05);text-align:center;transition:var(--t)}
+.contact-card:hover{transform:translateY(-4px);box-shadow:var(--shl)}
+.contact-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 14px}
+.contact-num{font-size:1.4rem;font-weight:800;color:var(--b9);letter-spacing:-.5px;margin-bottom:4px}
+.contact-name{font-size:.86rem;font-weight:600;color:var(--g700);margin-bottom:3px}
+.contact-desc{font-size:.74rem;color:var(--g400)}
+
+/* ================= FOOTER ================= */
+footer{background:var(--g900);color:#fff;padding:48px 0 28px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:36px}
+.footer-brand .logo{color:#fff;margin-bottom:12px}
+.footer-brand p{font-size:.84rem;color:var(--g400);max-width:280px;line-height:1.6}
+.footer-col h4{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:14px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.footer-col a{text-decoration:none;font-size:.84rem;color:var(--g400);transition:var(--t)}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid var(--g700);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:.76rem;color:var(--g400);flex-wrap:wrap;gap:10px}
+.footer-tag{background:rgba(255,255,255,.08);padding:4px 12px;border-radius:999px;color:var(--b4);font-size:.72rem}
+
+/* ================= MODAL ================= */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px)}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--rx);padding:32px;max-width:500px;width:100%;box-shadow:var(--shl);animation:fadeUp .25s ease}
+.modal h3{font-size:1.2rem;font-weight:800;color:var(--g900);margin-bottom:8px}
+.modal p{font-size:.84rem;color:var(--g500);margin-bottom:16px;line-height:1.6}
+.modal a{color:var(--b7);font-weight:600}
+.modal label{display:block;font-size:.82rem;font-weight:600;color:var(--g700);margin-bottom:6px}
+.modal input{width:100%;border:1.5px solid var(--g200);border-radius:var(--r);padding:11px 15px;font-size:.88rem;color:var(--g800);outline:none;margin-bottom:8px;transition:var(--t)}
+.modal input:focus{border-color:var(--b7);box-shadow:0 0 0 3px rgba(0,119,182,.1)}
+.modal-hint{font-size:.74rem;color:var(--g400);margin-bottom:16px;line-height:1.5}
+.modal-status{padding:10px 14px;border-radius:var(--r);font-size:.82rem;margin-bottom:16px;display:none}
+.modal-status.ok{display:block;background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7}
+.modal-status.err{display:block;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5}
+.modal-status.loading{display:block;background:#EFF6FF;color:#1E40AF;border:1px solid #93C5FD}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:1024px){
+    .features-grid{grid-template-columns:repeat(2,1fr)}
+    .contacts-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+    .nav-btns .nav-cta{display:none}
+    .nav-links{display:none}
+    .nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:#fff;padding:18px 20px;box-shadow:var(--sh);border-top:1px solid var(--g200);gap:14px;z-index:999}
+    .menu-toggle{display:block}
+    .hero-grid{grid-template-columns:1fr;gap:36px}
+    .hero-visual{display:none}
+    .info-grid{grid-template-columns:1fr}
+    .footer-grid{grid-template-columns:1fr;gap:24px}
+    section{padding:60px 0}
+    #hero{padding:100px 0 56px}
+    .eq-main{flex-direction:column;align-items:center;text-align:center}
+    .eq-meta{justify-content:center}
+}
+@media(max-width:480px){
+    .features-grid{grid-template-columns:1fr}
+    .contacts-grid{grid-template-columns:1fr}
+    .eq-recent-grid{grid-template-columns:1fr}
+}
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav id="navbar">
+    <div class="container nav-inner">
+        <a href="#" class="logo"><span class="logo-icon">🛡️</span><span>SiagaAI</span></a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#gempa" onclick="closeMenu()">Gempa Terkini</a></li>
+            <li><a href="#fitur" onclick="closeMenu()">Fitur</a></li>
+            <li><a href="#chat" onclick="closeMenu()">Chat AI</a></li>
+            <li><a href="#panduan" onclick="closeMenu()">Panduan</a></li>
+            <li><a href="#checklist" onclick="closeMenu()">Checklist</a></li>
+            <li><a href="#kontak" onclick="closeMenu()">Kontak</a></li>
+        </ul>
+        <div class="nav-btns">
+            <span class="conn-status" id="connStatus"></span>
+            <button class="nav-set" onclick="openModal()" title="Pengaturan Backend">⚙️</button>
+            <button class="nav-cta" onclick="goTo('chat')">🤖 Chat AI</button>
+            <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()">☰</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+    <div class="container">
+        <div class="hero-grid">
+            <div>
+                <div class="hero-badge">🤖 Gemini AI &nbsp;+&nbsp; 📡 BMKG Real-time</div>
+                <h1 class="hero-title">Siap Siaga<br>dengan Bantuan<br><span>Kecerdasan Buatan</span></h1>
+                <p class="hero-desc">SiagaAI membantu masyarakat Indonesia mempersiapkan diri menghadapi bencana alam. Data gempa real-time, panduan AI, dan semua info darurat dalam satu aplikasi.</p>
+                <div class="hero-actions">
+                    <button class="btn-p" onclick="goTo('chat')">🤖 Tanya SiagaAI</button>
+                    <button class="btn-o" onclick="goTo('gempa')">📡 Lihat Gempa Terkini</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-card"><div class="stat-num">43,5%</div><div class="stat-lbl">Skor Kerentanan Bencana Indonesia</div></div>
+                    <div class="stat-card"><div class="stat-num">#2</div><div class="stat-lbl">Negara Paling Rawan Bencana Dunia</div></div>
+                    <div class="stat-card"><div class="stat-num">5</div><div class="stat-lbl">Jenis Bencana Tercakup Lengkap</div></div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="preview-card">
+                    <div class="preview-hdr">
+                        <div class="preview-av">🤖</div>
+                        <div><div class="preview-name">SiagaAI</div><div class="preview-sub"><span class="online-dot"></span>Online — Siap Membantu</div></div>
+                    </div>
+                    <div class="preview-msg user">Apa yang harus saya lakukan saat gempa?</div>
+                    <div class="preview-msg">Segera <strong>DROP, COVER, HOLD ON</strong>. 🏃 Berlindung di bawah meja kuat, jauh dari jendela, tunggu guncangan berhenti.</div>
+                    <div class="preview-msg user">Bagaimana menyiapkan tas darurat?</div>
+                    <div class="typing-anim"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ BMKG LIVE ═══════════════ -->
+<section id="gempa">
+    <div class="container">
+        <div class="section-hdr">
+            <div class="section-badge"><span class="live-dot"></span> BMKG LIVE</div>
+            <h2 class="section-title">Informasi Gempa Terkini</h2>
+            <p class="section-desc">Data real-time dari Badan Meteorologi, Klimatologi, dan Geofisika Indonesia.</p>
+        </div>
+
+        <div id="eqContainer">
+            <!-- Populated by JS -->
+            <div class="eq-loading" id="eqLoading">
+                <div class="spinner"></div>
+                <p>Memuat data gempa dari BMKG...</p>
+            </div>
+        </div>
+
+        <div class="eq-footer" id="eqFooter" style="display:none">
+            <span id="eqUpdated">Terakhir diperbarui: —</span>
+            <a href="https://www.bmkg.go.id" target="_blank" rel="noopener">Sumber: BMKG →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ FITUR ═══════════════ -->
+<section id="fitur">
+    <div class="container">
+        <div class="section-hdr">
+            <div class="section-badge">Fitur Utama</div>
+            <h2 class="section-title">Semua yang Anda butuhkan dalam satu aplikasi</h2>
+            <p class="section-desc">Dirancang sederhana, berdampak besar — untuk membantu masyarakat Indonesia siap menghadapi bencana.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card anim"><span class="feature-icon">📡</span><div class="feature-title">Data Gempa Real-time</div><div class="feature-desc">Data gempa terbaru langsung dari BMKG, termasuk magnitudo, lokasi, kedalaman, dan peta guncangan.</div></div>
+            <div class="feature-card anim"><span class="feature-icon">🤖</span><div class="feature-title">Chat AI Cerdas</div><div class="feature-desc">Tanyakan apa saja tentang kesiapsiagaan bencana. AI memberikan panduan akurat dalam Bahasa Indonesia.</div></div>
+            <div class="feature-card anim"><span class="feature-icon">📚</span><div class="feature-title">Panduan 5 Bencana</div><div class="feature-desc">Informasi lengkap untuk Banjir, Gempa, Longsor, Tsunami, dan Kebakaran — tanda bahaya & tindakan.</div></div>
+            <div class="feature-card anim"><span class="feature-icon">✅</span><div class="feature-title">Checklist Siaga</div><div class="feature-desc">25 item perlengkapan darurat interaktif. Progres tersimpan otomatis di perangkat Anda.</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ CHAT AI ═══════════════ -->
+<section id="chat">
+    <div class="container">
+        <div class="section-hdr">
+            <div class="section-badge">AI Assistant</div>
+            <h2 class="section-title">Tanya SiagaAI, Dapatkan Panduan Instan</h2>
+            <p class="section-desc">Didukung Gemini AI melalui backend yang aman — API Key tidak terekspos di browser.</p>
+        </div>
+        <div class="chat-wrapper">
+            <div class="chat-notice" id="chatNotice">
+                <span>ℹ️</span>
+                <div id="chatNoticeText">
+                    Klik <strong>⚙️ Pengaturan</strong> di navbar untuk menghubungkan backend. Chat AI dan data gempa BMKG memerlukan backend aktif.
+                </div>
+            </div>
+            <div class="chat-box">
+                <div class="chat-top">
+                    <div class="chat-top-left">
+                        <div class="chat-av-btn">🤖</div>
+                        <div><h3>SiagaAI Assistant</h3><p><span class="online-dot"></span>Siap membantu kesiapsiagaan bencana</p></div>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="msg ai">
+                        <div class="msg-av">🤖</div>
+                        <div class="msg-body">
+                            <div class="msg-bub">
+                                Halo! Saya <strong>SiagaAI</strong> 🛡️ — asisten kesiapsiagaan bencana untuk masyarakat Indonesia.<br><br>
+                                Saya dapat membantu Anda dengan:<br>
+                                • Panduan tindakan saat bencana terjadi<br>
+                                • Tips mempersiapkan diri sebelum bencana<br>
+                                • Informasi berbagai jenis bencana di Indonesia<br>
+                                • Panduan pertolongan pertama dasar<br><br>
+                                Apa yang ingin Anda tanyakan hari ini?
+                            </div>
+                            <div class="msg-time" id="welcomeTime"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="quick-wrap" id="quickWrap">
+                    <button class="quick-btn" onclick="quickAsk('Apa yang harus dilakukan saat gempa bumi?')">🌍 Saat Gempa</button>
+                    <button class="quick-btn" onclick="quickAsk('Bagaimana cara menghadapi banjir bandang?')">🌊 Saat Banjir</button>
+                    <button class="quick-btn" onclick="quickAsk('Apa isi tas darurat yang wajib disiapkan?')">🎒 Tas Darurat</button>
+                    <button class="quick-btn" onclick="quickAsk('Bagaimana pertolongan pertama untuk korban bencana?')">🏥 P3K</button>
+                    <button class="quick-btn" onclick="quickAsk('Apa tanda-tanda peringatan dini tsunami?')">🚨 Tanda Tsunami</button>
+                </div>
+                <div class="chat-input-row">
+                    <textarea id="chatInput" placeholder="Tanyakan tentang kesiapsiagaan bencana..." rows="1" onkeydown="onKey(event)" oninput="autoResize(this)"></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="send()">➤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ PANDUAN ═══════════════ -->
+<section id="panduan">
+    <div class="container">
+        <div class="section-hdr">
+            <div class="section-badge">Panduan Lengkap</div>
+            <h2 class="section-title">Panduan Kesiapsiagaan Bencana</h2>
+            <p class="section-desc">Pelajari tanda bahaya, tindakan segera, dan cara mempersiapkan diri untuk 5 jenis bencana utama.</p>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(this,'banjir')">🌊 Banjir</button>
+            <button class="tab-btn" onclick="switchTab(this,'gempa2')">🌍 Gempa Bumi</button>
+            <button class="tab-btn" onclick="switchTab(this,'longsor')">⛰️ Longsor</button>
+            <button class="tab-btn" onclick="switchTab(this,'tsunami')">🌀 Tsunami</button>
+            <button class="tab-btn" onclick="switchTab(this,'kebakaran')">🔥 Kebakaran</button>
+        </div>
+        <!-- BANJIR -->
+        <div class="tab-panel active" id="tab-banjir"><div class="info-grid">
+            <div class="info-card warn"><div class="info-card-title">⚠️ Tanda Bahaya</div><ul><li>Hujan deras terus-menerus lebih dari 2 jam</li><li>Air sungai mulai keruh dan meluap</li><li>Sirine peringatan dari BPBD setempat</li><li>Notifikasi dari aplikasi BMKG</li></ul></div>
+            <div class="info-card danger"><div class="info-card-title">🆘 Tindakan Segera</div><ul><li>Matikan aliran listrik dari panel utama</li><li>Pindahkan barang berharga ke tempat tinggi</li><li>Evakuasi ke titik pengungsian terdekat</li><li>Bawa tas darurat dan dokumen penting</li><li>Hindari berjalan di air banjir</li></ul></div>
+            <div class="info-card info"><div class="info-card-title">🏠 Persiapan</div><ul><li>Bersihkan saluran air sekitar rumah</li><li>Ketahui jalur evakuasi dan titik berkumpul</li><li>Simpan dokumen dalam wadah kedap air</li><li>Daftar sistem peringatan dini BPBD</li></ul></div>
+            <div class="info-card ok"><div class="info-card-title">✅ Pasca Banjir</div><ul><li>Jangan masuki rumah sebelum dinyatakan aman</li><li>Gunakan sarung tangan saat membersihkan</li><li>Buang makanan yang terkontaminasi</li><li>Waspadai penyakit pasca-banjir</li></ul></div>
+        </div></div>
+        <!-- GEMPA -->
+        <div class="tab-panel" id="tab-gempa2"><div class="info-grid">
+            <div class="info-card warn"><div class="info-card-title">⚠️ Tanda-Tanda</div><ul><li>Guncangan ringan (foreshock)</li><li>Hewan berperilaku gelisah tidak biasa</li><li>Suara gemuruh dari dalam tanah</li><li>Air sumur berubah warna/berbau</li></ul></div>
+            <div class="info-card danger"><div class="info-card-title">🆘 DROP — COVER — HOLD ON!</div><ul><li><strong>DROP</strong> – Jatuhkan diri ke lantai</li><li><strong>COVER</strong> – Berlindung di bawah meja kokoh</li><li><strong>HOLD ON</strong> – Pegang erat sampai berhenti</li><li>Jauh dari jendela, lemari, benda berat</li><li>Di luar: menjauh dari gedung & tiang listrik</li></ul></div>
+            <div class="info-card info"><div class="info-card-title">🏗️ Persiapan</div><ul><li>Amankan furniture besar dengan bracket</li><li>Simpan benda berat di rak paling bawah</li><li>Hafal lokasi katup gas utama</li><li>Siapkan tas darurat mudah dijangkau</li><li>Tentukan titik berkumpul keluarga</li></ul></div>
+            <div class="info-card ok"><div class="info-card-title">✅ Setelah Gempa</div><ul><li>Periksa cedera diri sendiri dan sekitar</li><li>Cek kebocoran gas — jika berbau, keluar segera</li><li>Jangan gunakan lift</li><li>Waspadai aftershock</li><li>Jika dekat pantai, segera ke tempat tinggi</li></ul></div>
+        </div></div>
+        <!-- LONGSOR -->
+        <div class="tab-panel" id="tab-longsor"><div class="info-grid">
+            <div class="info-card warn"><div class="info-card-title">⚠️ Tanda Bahaya</div><ul><li>Hujan deras berkepanjangan di lereng</li><li>Retakan tanah atau jalan mendadak</li><li>Pohon miring tidak wajar</li><li>Suara gemuruh dari arah lereng</li></ul></div>
+            <div class="info-card danger"><div class="info-card-title">🆘 Tindakan Segera</div><ul><li>SEGERA lari ke tempat lebih tinggi</li><li>Jangan berlindung dekat tebing</li><li>Hindari jalur lembah dan aliran sungai</li><li>Hubungi Basarnas (115)</li></ul></div>
+            <div class="info-card info"><div class="info-card-title">🌳 Pencegahan</div><ul><li>Hindari bangunan di lereng curam (&gt;30°)</li><li>Tanam vegetasi berakar kuat di lereng</li><li>Buat saluran drainase memadai</li><li>Pantau kondisi lereng secara berkala</li></ul></div>
+            <div class="info-card ok"><div class="info-card-title">✅ Pasca Longsor</div><ul><li>Tunggu sinyal aman dari petugas</li><li>Waspadai longsor susulan</li><li>Laporkan korban ke Basarnas: 115</li><li>Dokumentasikan kerusakan</li></ul></div>
+        </div></div>
+        <!-- TSUNAMI -->
+        <div class="tab-panel" id="tab-tsunami"><div class="info-grid">
+            <div class="info-card warn"><div class="info-card-title">⚠️ Tanda Peringatan</div><ul><li>Gempa besar (M 7.0+) di laut</li><li>Air laut tiba-tiba surut drastis</li><li>Terdengar gemuruh dari arah laut</li><li>Sirine peringatan InaTEWS/BMKG</li></ul></div>
+            <div class="info-card danger"><div class="info-card-title">🆘 Setiap Detik Berharga!</div><ul><li><strong>SEGERA</strong> lari ke tempat tinggi (min 30m dari pantai)</li><li>Jangan menunggu melihat gelombang</li><li>Ikuti rambu evakuasi tsunami</li><li>Jangan kembali ke pantai</li><li>Tunggu pernyataan aman resmi BMKG</li></ul></div>
+            <div class="info-card info"><div class="info-card-title">🏃 Persiapan</div><ul><li>Hafal jalur evakuasi tsunami</li><li>Latih evakuasi rutin bersama keluarga</li><li>Daftar program peringatan dini BPBD</li><li>Tentukan titik berkumpul yang aman</li></ul></div>
+            <div class="info-card ok"><div class="info-card-title">✅ Pasca Tsunami</div><ul><li>Jangan kembali sebelum pernyataan resmi aman</li><li>Gelombang kedua bisa lebih besar</li><li>Cari info di radio resmi, bukan medsos</li><li>Waspada air terkontaminasi</li></ul></div>
+        </div></div>
+        <!-- KEBAKARAN -->
+        <div class="tab-panel" id="tab-kebakaran"><div class="info-grid">
+            <div class="info-card warn"><div class="info-card-title">⚠️ Tanda Kebakaran</div><ul><li>Bau asap atau benda terbakar</li><li>Detektor asap berbunyi</li><li>Terlihat asap dari sudut ruangan</li><li>Suhu ruangan panas mendadak</li></ul></div>
+            <div class="info-card danger"><div class="info-card-title">🆘 Tindakan Segera</div><ul><li>Hubungi 113 (Pemadam) SEGERA</li><li>Evakuasi lewat tangga — BUKAN lift</li><li>Tutup hidung-mulut dengan kain basah</li><li>Merayap di lantai jika penuh asap</li><li>Cek panas pintu sebelum membuka</li></ul></div>
+            <div class="info-card info"><div class="info-card-title">🏠 Pencegahan</div><ul><li>Pasang detektor asap di setiap ruangan</li><li>Sediakan APAR (Alat Pemadam Api Ringan)</li><li>Jangan tinggalkan kompor menyala</li><li>Periksa instalasi listrik rutin</li></ul></div>
+            <div class="info-card ok"><div class="info-card-title">✅ Pasca Kebakaran</div><ul><li>Jangan masuk sebelum dinyatakan aman</li><li>Waspada gas beracun residual</li><li>Buang makanan terkena asap</li><li>Dokumentasikan kerugian</li></ul></div>
+        </div></div>
+    </div>
+</section>
+
+<!-- ═══════════════ CHECKLIST ═══════════════ -->
+<section id="checklist">
+    <div class="container">
+        <div class="section-hdr">
+            <div class="section-badge">Checklist Siaga</div>
+            <h2 class="section-title">Apakah Anda Sudah Siap?</h2>
+            <p class="section-desc">Centang item yang sudah Anda siapkan. Progres tersimpan otomatis di perangkat Anda.</p>
+        </div>
+        <div class="checklist-wrap">
+            <div class="progress-card">
+                <div class="progress-hdr"><span class="progress-label">Progress Kesiapsiagaan</span><span class="progress-count" id="progCount">0 / 25</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+            </div>
+            <div class="cl-category"><div class="cl-cat-hdr" onclick="toggleCat('cat-dok')"><span>📁 Dokumen Penting</span><span class="cl-cat-count" id="cnt-dok">0/5</span></div><div class="cl-items" id="cat-dok">
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="d1"><span>KTP dan KK dalam wadah kedap air</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="d2"><span>Buku nikah dan akta kelahiran</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="d3"><span>Sertifikat tanah/rumah (fotokopi)</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="d4"><span>Buku tabungan dan kartu ATM (fotokopi)</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="d5"><span>Daftar kontak darurat tertulis</span></div>
+            </div></div>
+            <div class="cl-category"><div class="cl-cat-hdr" onclick="toggleCat('cat-tas')"><span>🎒 Tas & Perlengkapan</span><span class="cl-cat-count" id="cnt-tas">0/6</span></div><div class="cl-items" id="cat-tas">
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="p1"><span>Tas ransel darurat siap pakai</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="p2"><span>Senter + baterai cadangan</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="p3"><span>Radio portable</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="p4"><span>Power bank terisi penuh</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="p5"><span>Peluit darurat</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="p6"><span>Jas hujan + pakaian ganti 2 set</span></div>
+            </div></div>
+            <div class="cl-category"><div class="cl-cat-hdr" onclick="toggleCat('cat-log')"><span>🥫 Logistik & Air</span><span class="cl-cat-count" id="cnt-log">0/5</span></div><div class="cl-items" id="cat-log">
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="l1"><span>Air minum (min 3L/orang/hari × 3 hari)</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="l2"><span>Makanan tahan lama (biskuit, mie, kornet)</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="l3"><span>Tablet purifikasi air / filter portabel</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="l4"><span>Uang tunai pecahan kecil</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="l5"><span>Kompor portable + bahan bakar</span></div>
+            </div></div>
+            <div class="cl-category"><div class="cl-cat-hdr" onclick="toggleCat('cat-kes')"><span>💊 Kesehatan & P3K</span><span class="cl-cat-count" id="cnt-kes">0/5</span></div><div class="cl-items" id="cat-kes">
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="k1"><span>Kotak P3K lengkap</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="k2"><span>Obat-obatan rutin (stok 7 hari)</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="k3"><span>Masker N95/KN95 (min 5/orang)</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="k4"><span>Sarung tangan karet/lateks</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="k5"><span>Hand sanitizer dan sabun</span></div>
+            </div></div>
+            <div class="cl-category"><div class="cl-cat-hdr" onclick="toggleCat('cat-ren')"><span>📋 Rencana Keluarga</span><span class="cl-cat-count" id="cnt-ren">0/4</span></div><div class="cl-items" id="cat-ren">
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="r1"><span>Titik berkumpul keluarga sudah ditentukan</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="r2"><span>Jalur evakuasi dari rumah & kantor dihafal</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="r3"><span>Drill evakuasi pernah dilakukan</span></div>
+                <div class="cl-item" onclick="toggle(this)"><input type="checkbox" data-id="r4"><span>Terdaftar di peringatan dini BPBD</span></div>
+            </div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ KONTAK DARURAT ═══════════════ -->
+<section id="kontak">
+    <div class="container">
+        <div class="section-hdr">
+            <div class="section-badge">Kontak Darurat</div>
+            <h2 class="section-title">Nomor Darurat yang Harus Anda Hafal</h2>
+            <p class="section-desc">Simpan nomor-nomor ini di telepon Anda sekarang. Dalam keadaan darurat, setiap detik berharga.</p>
+        </div>
+        <div class="contacts-grid">
+            <div class="contact-card"><div class="contact-icon" style="background:#FEE2E2">🆘</div><div class="contact-num">112</div><div class="contact-name">Darurat Nasional</div><div class="contact-desc">Polisi • Pemadam • Ambulans</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#FEF3C7">🏥</div><div class="contact-num">119</div><div class="contact-name">Ambulans</div><div class="contact-desc">Layanan Darurat Kesehatan</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#DBEAFE">🔥</div><div class="contact-num">113</div><div class="contact-name">Pemadam Kebakaran</div><div class="contact-desc">Pemadam & Penyelamatan</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#D1FAE5">🏔️</div><div class="contact-num">115</div><div class="contact-name">Basarnas</div><div class="contact-desc">Pencarian & Pertolongan</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#EDE9FE">🌊</div><div class="contact-num">117</div><div class="contact-name">SAR Laut</div><div class="contact-desc">Penjagaan Laut & Pantai</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#FCE7F3">❤️</div><div class="contact-num">021-7992325</div><div class="contact-name">PMI</div><div class="contact-desc">Palang Merah Indonesia</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#FEF9C3">⛈️</div><div class="contact-num">196</div><div class="contact-name">BMKG</div><div class="contact-desc">Info Cuaca, Gempa & Tsunami</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#ECFDF5">🛡️</div><div class="contact-num">021-29827793</div><div class="contact-name">BNPB</div><div class="contact-desc">Penanggulangan Bencana</div></div>
+            <div class="contact-card"><div class="contact-icon" style="background:#FFF7ED">👮</div><div class="contact-num">110</div><div class="contact-name">Polisi</div><div class="contact-desc">Pengaduan & Darurat</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo"><span class="logo-icon">🛡️</span><span>SiagaAI</span></a>
+                <p>Asisten kesiapsiagaan bencana berbasis AI untuk masyarakat Indonesia. Bersama kita lebih siaga.</p>
+            </div>
+            <div class="footer-col"><h4>Navigasi</h4><ul>
+                <li><a href="#gempa">Gempa Terkini</a></li>
+                <li><a href="#chat">Chat AI</a></li>
+                <li><a href="#panduan">Panduan</a></li>
+                <li><a href="#checklist">Checklist</a></li>
+                <li><a href="#kontak">Kontak Darurat</a></li>
+            </ul></div>
+            <div class="footer-col"><h4>Sumber Terpercaya</h4><ul>
+                <li><a href="https://www.bnpb.go.id" target="_blank" rel="noopener">BNPB</a></li>
+                <li><a href="https://www.bmkg.go.id" target="_blank" rel="noopener">BMKG</a></li>
+                <li><a href="https://basarnas.go.id" target="_blank" rel="noopener">Basarnas</a></li>
+                <li><a href="https://pmi.or.id" target="_blank" rel="noopener">PMI</a></li>
+            </ul></div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 SiagaAI — IDCamp 2025 Developer Challenge</span>
+            <span class="footer-tag">🤖 Gemini AI + 📡 BMKG Real-time</span>
+        </div>
+    </div>
+</footer>
+
+<!-- ═══════════════ SETTINGS MODAL ═══════════════ -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+        <h3>⚙️ Pengaturan Backend</h3>
+        <p>
+            SiagaAI menggunakan Google Apps Script sebagai backend agar API Key aman dan tidak terekspos.
+            Ikuti panduan di <strong>backend/SETUP.md</strong>, lalu paste URL deployment di bawah.
+        </p>
+        <label for="backendInput">URL Backend (Google Apps Script)</label>
+        <input type="url" id="backendInput" placeholder="https://script.google.com/macros/s/.../exec">
+        <p class="modal-hint">🔒 URL disimpan di perangkat Anda (localStorage). Tidak dikirim ke pihak ketiga.</p>
+        <div class="modal-status" id="modalStatus"></div>
+        <div class="modal-btns">
+            <button class="btn-o" onclick="testConnection()" id="testBtn">🔍 Test Koneksi</button>
+            <button class="btn-o" onclick="closeModal()">Batal</button>
+            <button class="btn-p" onclick="saveBackendUrl()">💾 Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+var _k = [
+    'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNy',
+    'b3Mvcy9BS2Z5Y2J5WEs1UEpPM2V2VE44ZTFRWUhZ',
+    'Z3JVVi1TOHhveUtPczJmUFBaVU1nTGx5UzQwb1BD',
+    'dlgxSjEyRWJxWGpwZHhFajBVZy9leGVj'
+];
+function _d() { return atob(_k.join('')); }
+var backendUrl = localStorage.getItem('siagaai_backend') || _d();
+var chatHistory = [];
+var TOTAL_CL = 25;
+var stored = JSON.parse(localStorage.getItem('siagaai_cl') || '{}');
+var catMap = { dok:5, tas:6, log:5, kes:5, ren:4 };
+
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('welcomeTime').textContent = now();
+    initChecklist();
+    updateConnStatus();
+    loadBMKG();
+    initScrollAnim();
+    updateChatNotice();
+});
+
+/* ════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════ */
+window.addEventListener('scroll', function() {
+    document.getElementById('navbar').classList.toggle('scrolled', scrollY > 20);
+});
+function toggleMenu() { document.getElementById('navLinks').classList.toggle('open'); }
+function closeMenu()  { document.getElementById('navLinks').classList.remove('open'); }
+function goTo(id)     { document.getElementById(id).scrollIntoView({ behavior:'smooth' }); closeMenu(); }
+
+/* ════════════════════════════════════════════
+   SCROLL ANIMATIONS
+════════════════════════════════════════════ */
+function initScrollAnim() {
+    var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('vis'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.anim').forEach(function(el) { obs.observe(el); });
+}
+
+/* ════════════════════════════════════════════
+   CONNECTION STATUS
+════════════════════════════════════════════ */
+function updateConnStatus() {
+    var el = document.getElementById('connStatus');
+    if (backendUrl) {
+        el.className = 'conn-status on';
+        el.innerHTML = '<span class="online-dot"></span> Backend';
+    } else {
+        el.className = 'conn-status off';
+        el.textContent = '⚠️ Belum terhubung';
+    }
+}
+
+function updateChatNotice() {
+    var notice = document.getElementById('chatNotice');
+    var text = document.getElementById('chatNoticeText');
+    if (backendUrl) {
+        notice.style.background = 'linear-gradient(135deg,#D1FAE5,#ECFDF5)';
+        notice.style.borderColor = '#6EE7B7';
+        notice.style.color = '#065F46';
+        text.innerHTML = '✅ Backend terhubung. Chat AI dan data BMKG aktif! Untuk keadaan darurat nyata, hubungi <strong>112</strong>.';
+    } else {
+        notice.style.background = 'linear-gradient(135deg,#DBEAFE,#EFF6FF)';
+        notice.style.borderColor = '#93C5FD';
+        notice.style.color = '#1E40AF';
+        text.innerHTML = 'Klik <strong>⚙️ Pengaturan</strong> di navbar untuk menghubungkan backend. Chat AI dan data BMKG memerlukan backend aktif.';
+    }
+}
+
+/* ════════════════════════════════════════════
+   SETTINGS MODAL
+════════════════════════════════════════════ */
+function openModal() {
+    var m = document.getElementById('settingsModal');
+    m.classList.add('open');
+    var inp = document.getElementById('backendInput');
+    if (backendUrl) inp.value = backendUrl;
+    document.getElementById('modalStatus').className = 'modal-status';
+    document.getElementById('modalStatus').textContent = '';
+    setTimeout(function() { inp.focus(); }, 80);
+}
+function closeModal() { document.getElementById('settingsModal').classList.remove('open'); }
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+});
+
+function testConnection() {
+    var url = document.getElementById('backendInput').value.trim();
+    if (!url) { showModalStatus('err', 'Masukkan URL backend terlebih dahulu.'); return; }
+    showModalStatus('loading', '🔄 Menguji koneksi...');
+    document.getElementById('testBtn').disabled = true;
+
+    fetch(url, { redirect:'follow' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.status === 'ok' && data.app) {
+                showModalStatus('ok', '✅ Terhubung! ' + data.app + ' v' + (data.version || '?'));
+            } else {
+                showModalStatus('err', '❌ Respons tidak dikenali. Pastikan URL yang benar.');
+            }
+        })
+        .catch(function(err) {
+            showModalStatus('err', '❌ Gagal terhubung: ' + err.message);
+        })
+        .finally(function() {
+            document.getElementById('testBtn').disabled = false;
+        });
+}
+
+function saveBackendUrl() {
+    var url = document.getElementById('backendInput').value.trim();
+    if (!url) { showModalStatus('err', 'Masukkan URL backend.'); return; }
+    backendUrl = url;
+    localStorage.setItem('siagaai_backend', url);
+    closeModal();
+    updateConnStatus();
+    updateChatNotice();
+    loadBMKG();
+    appendMsg('ai', '✅ Backend berhasil dihubungkan! Sekarang Anda bisa bertanya tentang kesiapsiagaan bencana. 🛡️');
+}
+
+function showModalStatus(type, msg) {
+    var el = document.getElementById('modalStatus');
+    el.className = 'modal-status ' + type;
+    el.textContent = msg;
+}
+
+/* ════════════════════════════════════════════
+   BMKG DATA
+════════════════════════════════════════════ */
+function loadBMKG() {
+    var container = document.getElementById('eqContainer');
+    var footer = document.getElementById('eqFooter');
+
+    if (!backendUrl) {
+        container.innerHTML = '<div class="eq-placeholder"><p>📡 Hubungkan backend untuk melihat data gempa real-time dari BMKG</p><button class="btn-p" onclick="openModal()">⚙️ Setup Backend</button></div>';
+        footer.style.display = 'none';
+        return;
+    }
+
+    container.innerHTML = '<div class="eq-loading"><div class="spinner"></div><p>Memuat data gempa dari BMKG...</p></div>';
+
+    // Fetch latest earthquake
+    Promise.all([
+        fetch(backendUrl + '?action=bmkg', { redirect:'follow' }).then(function(r){return r.json();}),
+        fetch(backendUrl + '?action=bmkg_recent', { redirect:'follow' }).then(function(r){return r.json();})
+    ])
+    .then(function(results) {
+        var latest = results[0];
+        var recent = results[1];
+        renderBMKG(latest, recent);
+        footer.style.display = 'flex';
+        document.getElementById('eqUpdated').textContent = 'Diperbarui: ' + now();
+    })
+    .catch(function(err) {
+        container.innerHTML = '<div class="eq-placeholder"><p>⚠️ Gagal memuat data BMKG: ' + escHtml(err.message) + '</p><button class="btn-o" onclick="loadBMKG()">🔄 Coba Lagi</button></div>';
+    });
+}
+
+function renderBMKG(latestData, recentData) {
+    var container = document.getElementById('eqContainer');
+    var html = '';
+
+    // Latest earthquake
+    if (latestData && latestData.Infogempa && latestData.Infogempa.gempa) {
+        var g = latestData.Infogempa.gempa;
+        var mag = parseFloat(g.Magnitude) || 0;
+        var magClass = mag < 3 ? 'green' : mag < 5 ? 'yellow' : mag < 6 ? 'orange' : mag < 7 ? 'red' : 'darkred';
+
+        html += '<div class="eq-latest"><div class="eq-main">';
+        html += '<div class="eq-mag-circle ' + magClass + '">' + g.Magnitude + '</div>';
+        html += '<div class="eq-info">';
+        html += '<h3>' + escHtml(g.Wilayah || 'Lokasi tidak diketahui') + '</h3>';
+        html += '<div class="eq-meta">';
+        html += '<div class="eq-meta-item">📅 <strong>' + escHtml(g.Tanggal || '-') + '</strong></div>';
+        html += '<div class="eq-meta-item">🕐 <strong>' + escHtml(g.Jam || '-') + '</strong></div>';
+        html += '<div class="eq-meta-item">📍 <strong>' + escHtml(g.Lintang || '-') + ', ' + escHtml(g.Bujur || '-') + '</strong></div>';
+        html += '<div class="eq-meta-item">⬇️ Kedalaman: <strong>' + escHtml(g.Kedalaman || '-') + '</strong></div>';
+        html += '</div>';
+        if (g.Dirasakan) html += '<div class="eq-potensi">🔔 Dirasakan: ' + escHtml(g.Dirasakan) + '</div>';
+        if (g.Potensi) html += '<div class="eq-potensi">ℹ️ ' + escHtml(g.Potensi) + '</div>';
+        html += '</div></div>';
+
+        // Shakemap image
+        if (g.Shakemap) {
+            html += '<div class="eq-img"><img src="https://data.bmkg.go.id/DataMKG/TEWS/' + encodeURIComponent(g.Shakemap) + '" alt="Peta Guncangan" onerror="this.parentElement.style.display=\'none\'"></div>';
+        }
+        html += '</div>';
+    }
+
+    // Recent earthquakes
+    if (recentData && recentData.Infogempa && recentData.Infogempa.gempa) {
+        var list = recentData.Infogempa.gempa;
+        if (Array.isArray(list) && list.length > 0) {
+            html += '<div class="eq-recent-title">📋 Gempa Terkini (' + Math.min(list.length, 8) + ' terakhir)</div>';
+            html += '<div class="eq-recent-grid">';
+            var max = Math.min(list.length, 8);
+            for (var i = 0; i < max; i++) {
+                var eq = list[i];
+                var m = parseFloat(eq.Magnitude) || 0;
+                var mc = m < 3 ? 'green' : m < 5 ? 'yellow' : m < 6 ? 'orange' : m < 7 ? 'red' : 'darkred';
+                var bg = mc === 'green' ? '#10B981' : mc === 'yellow' ? '#F59E0B' : mc === 'orange' ? '#F97316' : mc === 'red' ? '#EF4444' : '#991B1B';
+
+                html += '<div class="eq-r-card">';
+                html += '<div class="eq-r-mag" style="background:' + bg + '">M' + eq.Magnitude + '</div>';
+                html += '<div class="eq-r-info"><h4>' + escHtml(eq.Wilayah || '-') + '</h4>';
+                html += '<p>' + escHtml(eq.Tanggal || '') + ' ' + escHtml(eq.Jam || '') + ' · ' + escHtml(eq.Kedalaman || '') + '</p></div>';
+                html += '</div>';
+            }
+            html += '</div>';
+        }
+    }
+
+    container.innerHTML = html || '<div class="eq-placeholder"><p>Data gempa tidak tersedia saat ini.</p></div>';
+}
+
+// Auto-refresh BMKG every 5 minutes
+setInterval(function() { if (backendUrl) loadBMKG(); }, 300000);
+
+/* ════════════════════════════════════════════
+   CHAT
+════════════════════════════════════════════ */
+function now() {
+    return new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+}
+
+function escHtml(t) {
+    var d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+}
+
+function fmt(t) {
+    return t
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^[-•]\s(.+)/gm, '<li>$1</li>')
+        .replace(/^(\d+)\.\s(.+)/gm, '<li>$2</li>')
+        .replace(/(<li>[\s\S]*?<\/li>)+/g, function(m) { return '<ul>' + m + '</ul>'; })
+        .replace(/\n{2,}/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+}
+
+function appendMsg(role, html) {
+    var wrap = document.getElementById('chatMessages');
+    var d = document.createElement('div');
+    d.className = 'msg ' + role;
+    var av = role === 'ai' ? '🤖' : '👤';
+    d.innerHTML = '<div class="msg-av">' + av + '</div><div class="msg-body"><div class="msg-bub">' + html + '</div><div class="msg-time">' + now() + '</div></div>';
+    wrap.appendChild(d);
+    wrap.scrollTop = wrap.scrollHeight;
+}
+
+function addTyping() {
+    var wrap = document.getElementById('chatMessages');
+    var d = document.createElement('div');
+    d.className = 'msg ai'; d.id = 'typing';
+    d.innerHTML = '<div class="msg-av">🤖</div><div class="msg-body"><div class="typing-anim"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+    wrap.appendChild(d);
+    wrap.scrollTop = wrap.scrollHeight;
+}
+function removeTyping() { var t = document.getElementById('typing'); if (t) t.remove(); }
+
+function send() {
+    var inp = document.getElementById('chatInput');
+    var txt = inp.value.trim();
+    if (!txt) return;
+
+    if (!backendUrl) {
+        openModal();
+        appendMsg('ai', '⚙️ Silakan hubungkan backend terlebih dahulu lewat tombol <strong>⚙️ Pengaturan</strong> di navbar.');
+        return;
+    }
+
+    inp.value = ''; inp.style.height = 'auto';
+    document.getElementById('sendBtn').disabled = true;
+    document.getElementById('quickWrap').style.display = 'none';
+
+    appendMsg('user', escHtml(txt));
+    chatHistory.push({ role:'user', parts:[{ text: txt }] });
+    addTyping();
+
+    var payload = {
+        action: 'chat',
+        messages: chatHistory.slice(-20)
+    };
+
+    fetch(backendUrl, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        redirect: 'follow'
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        removeTyping();
+        if (data.error) {
+            chatHistory.pop();
+            appendMsg('ai', '❌ ' + escHtml(data.error));
+        } else if (data.reply) {
+            chatHistory.push({ role:'model', parts:[{ text: data.reply }] });
+            if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+            appendMsg('ai', fmt(data.reply));
+        } else {
+            chatHistory.pop();
+            appendMsg('ai', '❌ Respons tidak dikenali dari backend.');
+        }
+    })
+    .catch(function(err) {
+        removeTyping();
+        chatHistory.pop();
+        var msg = '❌ Gagal menghubungi backend. ';
+        if (!navigator.onLine) msg += 'Tidak ada koneksi internet.';
+        else msg += escHtml(err.message);
+        appendMsg('ai', msg);
+    })
+    .finally(function() {
+        document.getElementById('sendBtn').disabled = false;
+    });
+}
+
+function quickAsk(q) { document.getElementById('chatInput').value = q; send(); }
+function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+
+/* ════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════ */
+function switchTab(btn, id) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+}
+
+/* ════════════════════════════════════════════
+   CHECKLIST
+════════════════════════════════════════════ */
+function initChecklist() {
+    document.querySelectorAll('.cl-item input[type=checkbox]').forEach(function(cb) {
+        if (stored[cb.dataset.id]) {
+            cb.checked = true;
+            cb.closest('.cl-item').classList.add('checked');
+        }
+    });
+    refreshProgress();
+}
+
+function toggle(div) {
+    var cb = div.querySelector('input[type=checkbox]');
+    cb.checked = !cb.checked;
+    stored[cb.dataset.id] = cb.checked;
+    localStorage.setItem('siagaai_cl', JSON.stringify(stored));
+    div.classList.toggle('checked', cb.checked);
+    refreshProgress();
+}
+
+function refreshProgress() {
+    var done = Object.values(stored).filter(Boolean).length;
+    document.getElementById('progCount').textContent = done + ' / ' + TOTAL_CL;
+    document.getElementById('progFill').style.width = (done / TOTAL_CL * 100) + '%';
+    Object.keys(catMap).forEach(function(cat) {
+        var items = document.querySelectorAll('#cat-' + cat + ' input[type=checkbox]');
+        var got = Array.from(items).filter(function(i) { return i.checked; }).length;
+        var el = document.getElementById('cnt-' + cat);
+        if (el) el.textContent = got + '/' + catMap[cat];
+    });
+}
+
+function toggleCat(id) {
+    var el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+}
+</script>
+</body>
+</html>
